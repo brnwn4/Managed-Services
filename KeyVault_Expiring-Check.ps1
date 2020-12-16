@@ -2,9 +2,9 @@
 This script will be used in pair with the "CreateReportFunction" Fill out the following below if running manually
 to describe Subscription Info etc.
 
-This will go through and define the object ID of the executioner and then provision an access policy to all KV's. Then a loop will occur
-for all Secrets,Keys, and Certificates to define what is expiring in x days. Calling the function to export to a csv. Finally after the Data is collected,
-the access policy is removed!   
+This will go through and define the object ID of the executioner and then provision an access policy to the KV. Then loop through
+all Secrets,Keys, and Certificates to define what is expiring in x days. Calling the function to export to a csv. Finally after the Data is collected,
+the access policy is removed! --Repeating for each KeyVault
 #>
 
 # Uncomment this section if running manually
