@@ -1,3 +1,19 @@
+<# 
+This script will be used in pair with the "CreateReportFunction" Fill out the following below if running manually
+to describe Subscription Info etc.
+
+This will go through and define the object ID of the executioner and then provision an access policy to all KV's. Then a loop will occur
+for all Secrets,Keys, and Certificates to define what is expiring in x days. Calling the function to export to a csv. Finally after the Data is collected,
+the access policy is removed!   
+#>
+
+# Uncomment this section if running manually
+#$subscriptionName = "Eversource-IT-Tst-01"
+#$subscriptionId = "dc212303-893e-404d-a787-3a960b14e8bf"
+#Select-AzSubscription -Subscription $subscriptionName
+$days = 31
+$skip = $false
+
 $usercontext = az account show | convertfrom-json
 $accinfo = ""
 if ($usercontext.user.type -eq "user") {
@@ -9,14 +25,6 @@ if ($usercontext.user.type -eq "servicePrincipal") {
 if ($usercontext.user.type -eq "") {
     write-host "Could not find account info"
     }
-
-# Uncomment this section if running manually
-#$subscriptionName = "Eversource-IT-Tst-01"
-#$subscriptionId = "dc212303-893e-404d-a787-3a960b14e8bf"
-#Select-AzSubscription -Subscription $subscriptionName
-$days = 31
-$skip = $false
-#
 
 # Call in CreateReportItem function
 . "./createReportFunction.ps1"
