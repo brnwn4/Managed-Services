@@ -13,11 +13,11 @@ create a VM from the snapshot that was taken. You will need to know the Resource
 #>
 
 # **** FILL ME **** Variables for VM to take the snapshot of ****
-$Resourcegroup = 'bw-test'
-$VMName = 'bw-test-vm'
+$Resourcegroup = '$null'
+$VMName = '$null'
 #What RG to store the Snapshot in
-$SnapShotRG = 'bw-test'
-### FILL OUT THE ABOVE ###
+$SnapShotRG = '$null'
+### FILL OUT THE ($null) ABOVE ###
 
 
 $SnapshotName = $(az vm show --resource-group $Resourcegroup --name $VMName --query "storageProfile.osDisk.name" -o tsv)
@@ -44,13 +44,22 @@ Write-Host "Your Snapshot has been created as <$SnapshotName-snap> ! " -Foregrou
 <#
 The following will help define where to build and deploy the VM from the specified snapshot
 
-**** FILL ME **** to build out new VM with newly created Snapshot
+**** FILL Out $null **** to build out new VM with newly created Snapshot
 Provide the subscription Id of the subscription where you want to create Managed Disks 
 #>
-$newvmsubscriptionId = '7e948898-d1c0-49c2-8895-94d7d8f8fd36'
+$newvmsubscriptionId = '$null'
 
 #Provide the name of your resource group
-$newvmresourceGroupName = 'bw-test'
+$newvmresourceGroupName = '$null'
+
+#Provide the size of the disks in GB. It should be greater than the VHD file size.
+$newvmdiskSize = '$null'
+
+#Provide the storage type for Managed Disk. Premium_LRS or Standard_LRS.
+$newvmstorageType = '$null'
+
+#Provide the OS type (linux or windows)
+$newvmosType = '$null'
 
 #Provide the name of the snapshot that will be used to create Managed Disks. Can leave as is. 
 $snapshotfinalname = "${SnapshotName}-snap"
@@ -58,18 +67,8 @@ $snapshotfinalname = "${SnapshotName}-snap"
 #Provide the name of the Managed Disk
 $newvmosDiskName = "${VMName}-snapshot_disk"
 
-#Provide the size of the disks in GB. It should be greater than the VHD file size.
-$newvmdiskSize = '246'
-
-#Provide the storage type for Managed Disk. Premium_LRS or Standard_LRS.
-$newvmstorageType = 'Premium_LRS'
-
-#Provide the OS type
-$newvmosType = 'windows'
-
 #Provide the name of the virtual machine
 $newvmvirtualMachineName = "${VMName}-snapshot_vm"
-
 
 #Set the context to the subscription Id where Managed Disk will be created
 az account set --subscription $newvmsubscriptionId
