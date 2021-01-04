@@ -13,10 +13,10 @@ create a VM from the snapshot that was taken. You will need to know the Resource
 #>
 
 # **** FILL ME **** Variables for VM to take the snapshot of ****
-$Resourcegroup = 'brandon-rg'
-$VMName = 'test-vm01'
+$Resourcegroup = '$null'
+$VMName = '$null'
 #What RG to store the Snapshot in
-$SnapShotRG = 'brandon-rg'
+$SnapShotRG = '$null'
 ### FILL OUT THE ABOVE ###
 
 
@@ -47,19 +47,19 @@ The following will help define where to build and deploy the VM from the specifi
 **** FILL ME **** to build out new VM with newly created Snapshot
 Provide the subscription Id of the subscription where you want to create Managed Disks 
 #>
-$newvmsubscriptionId = '6f882cde-0dd4-4e6d-9e62-09ccc96c786a'
+$newvmsubscriptionId = '$null'
 
 #Provide the name of your resource group
-$newvmresourceGroupName = 'brandon-rg'
+$newvmresourceGroupName = '$null'
+
+#Provide the size of the disks in GB. It should be greater than the VHD file size.
+$newvmdiskSize = '$null'
 
 #Provide the name of the snapshot that will be used to create Managed Disks. Can leave as is. 
 $snapshotfinalname = "${SnapshotName}-snap"
 
 #Provide the name of the Managed Disk
 $newvmosDiskName = "${VMName}-snapshot_disk"
-
-#Provide the size of the disks in GB. It should be greater than the VHD file size.
-$newvmdiskSize = '246'
 
 #Provide the storage type for Managed Disk. Premium_LRS or Standard_LRS.
 $newvmstorageType = 'Premium_LRS'
