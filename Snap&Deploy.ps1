@@ -13,11 +13,11 @@ create a VM from the snapshot that was taken. You will need to know the Resource
 #>
 
 # **** FILL ME **** Variables for VM to take the snapshot of ****
-$Resourcegroup = '$null'
-$VMName = '$null'
+$Resourcegroup = 'brandon-rg'
+$VMName = 'test-vm01'
 #What RG to store the Snapshot in
-$SnapShotRG = '$null'
-### FILL OUT THE ($null) ABOVE ###
+$SnapShotRG = 'brandon-rg'
+### FILL OUT THE ABOVE ###
 
 
 $SnapshotName = $(az vm show --resource-group $Resourcegroup --name $VMName --query "storageProfile.osDisk.name" -o tsv)
@@ -44,22 +44,13 @@ Write-Host "Your Snapshot has been created as <$SnapshotName-snap> ! " -Foregrou
 <#
 The following will help define where to build and deploy the VM from the specified snapshot
 
-**** FILL Out $null **** to build out new VM with newly created Snapshot
+**** FILL ME **** to build out new VM with newly created Snapshot
 Provide the subscription Id of the subscription where you want to create Managed Disks 
 #>
-$newvmsubscriptionId = '$null'
+$newvmsubscriptionId = '6f882cde-0dd4-4e6d-9e62-09ccc96c786a'
 
 #Provide the name of your resource group
-$newvmresourceGroupName = '$null'
-
-#Provide the size of the disks in GB. It should be greater than the VHD file size.
-$newvmdiskSize = '$null'
-
-#Provide the storage type for Managed Disk. Premium_LRS or Standard_LRS.
-$newvmstorageType = '$null'
-
-#Provide the OS type (linux or windows)
-$newvmosType = '$null'
+$newvmresourceGroupName = 'brandon-rg'
 
 #Provide the name of the snapshot that will be used to create Managed Disks. Can leave as is. 
 $snapshotfinalname = "${SnapshotName}-snap"
@@ -67,8 +58,18 @@ $snapshotfinalname = "${SnapshotName}-snap"
 #Provide the name of the Managed Disk
 $newvmosDiskName = "${VMName}-snapshot_disk"
 
+#Provide the size of the disks in GB. It should be greater than the VHD file size.
+$newvmdiskSize = '246'
+
+#Provide the storage type for Managed Disk. Premium_LRS or Standard_LRS.
+$newvmstorageType = 'Premium_LRS'
+
+#Provide the OS type
+$newvmosType = 'windows'
+
 #Provide the name of the virtual machine
 $newvmvirtualMachineName = "${VMName}-snapshot_vm"
+
 
 #Set the context to the subscription Id where Managed Disk will be created
 az account set --subscription $newvmsubscriptionId
@@ -88,3 +89,15 @@ $snapvminfo = az vm show -d --resource-group $newvmresourceGroupName --name $new
 $snapvmpip = $snapvminfo.publicIps
 
 Write-Host "Access your VM Here:$snapvmpip " -ForegroundColor Green
+
+$answer = Read-Host "Would you like to create and attach a new data disk to the VM? yes/no " 
+
+if ($answer -eq "yes") {
+    Write-Host "Okay lets create a disk!" -ForegroundColor Green
+    $datadisksize = Read-Host "How big to make the disk? in Gb <0-999>"
+    az vm disk attach --new --resource-group $newvmresourceGroupName --size-gb $datadisksize --sku Standard_LRS --vm-name $newvmvirtualMachineName --name "${VMName}-snapshot_data-disk"
+    Write-Host "Data disk created! And attached. Please initialize the disk on the VM and check out your newly built resources in the portal!" -ForegroundColor Green
+}
+else {
+    Write-Host "Skipping... either 'no' or unknown answer provided. Please check out your newly built VM in the Portal! "
+}
