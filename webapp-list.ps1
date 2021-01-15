@@ -11,8 +11,6 @@ param(
 # Create CSV Headers
 Add-Content -Path ./report.csv -Value "NAME,ID,RESOURCEGROUP,ENABLEDHOSTNAMES"
 
-$tenant = "f7f66891-a582-418d-999e-cb1be5354253"
-
 $subs = @()
 $subs = az account list --query "[?tenantId=='$tenant']" | ConvertFrom-Json
 
