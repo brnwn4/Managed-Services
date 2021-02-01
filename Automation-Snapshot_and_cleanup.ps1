@@ -3,8 +3,8 @@
 
 .Purpose - This Runbook is desgined to create a snapshot of DISKS marked with Snapshot=True
 
-.Requirements - This Runbook will use the RunAs account if provisioned with an Automation Account, and will use need to use the AzureRM.Compute
-                Module which should come out of the gate.
+.Requirements - This Runbook will use the RunAs account if provisioned with an Automation Account, and will need to use the AzureRM.Compute
+                Module which should come out of the gate with Azure Automation.
 
 To Modify the retention of the old snapshots, just modify line 41 in: " * Where-Object {($_.TimeCreated -lt [datetime]::UtcNow.AddDays(-14) <-- ) This example keeps snapshots as old as 14 days.
 
