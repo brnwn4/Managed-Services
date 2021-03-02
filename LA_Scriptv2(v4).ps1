@@ -2,7 +2,7 @@
 .Author : Brandon Wong
 
 .Purpose: This script will go through all subscriptions and query for the extensions related to log analytics. If the extension is present
-          it will go through and match the workspace id to the list of all workspaces in the subscription. 
+          it will go through and match the workspace id to the list of all workspaces in the subscriptions. 
 
 
 
