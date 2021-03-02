@@ -31,11 +31,7 @@ function UpdateCSV($item) {
     Add-Content -Path $reportPath -Value "$($item.subscription_name),$($item.vm_name),$($item.LA_Workspace),$($item.Agent_type),$($item.Status)"
 }
 
-$subs = @(
-    "Eversource-IT-Dev-01",
-    "Eversource-IT-Prd-01",
-    "Eversource-IT-Hub",
-    "Eversource-IT-Tst-01")
+$subs = @()
 
 # Loop through each sub and output the data to csv
 $all_workspaces = @()
