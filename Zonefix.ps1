@@ -29,7 +29,7 @@ foreach ($record in $LocalRecords) {
             Write-Host "The record IPs match for ""$($record.HostName)"".. Moving on"
         }
         if ($localip -ne $azip) {
-            Write-Host "The Record IPs do not match... Lets update our Local DNS for ""$($record.HostName)"""
+            Write-Host "The Record IPs do not match... Lets update our Local DNS for ""$($record.HostName)"" and change the IP from ""$localip"" to ""$azip"""
             $oldobj = get-dnsserverresourcerecord -Name $record.HostName -ZoneName $localzone -RRType "A"
             $newobj = get-dnsserverresourcerecord -Name $record.HostName -ZoneName $localzone -RRType "A"
             $updateip = $azip
