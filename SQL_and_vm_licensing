@@ -1,0 +1,50 @@
+
+$subs = @()
+
+# az account set --subscription $subscriptionName
+
+# init permissions report
+# $reportPath = "./quarterly-review/QRreports/vmLicensing.csv"
+$reportPath = "CHANGE ME TO PATH"
+# Add-Content -Path $reportPath -Value "SubscriptionName,ResourceGroupName,ServerName,LicenseType,OSType"
+
+function UpdateCSV($item) {
+    Add-Content -Path $reportPath -Value "$($item.SubscriptionName),$($item.ResourceGroupName),$($item.ServerName),$($item.LicenseType),$($item.OSType),$($item.Offer)"
+}
+
+
+# Query for VMs
+foreach ($sub in $subs) {
+az account set --s $sub
+$rgs = az group list | ConvertFrom-JSON
+    foreach ($rg in $rgs) {
+        $vms = @()
+        $vms = az vm list --resource-group $rg.Name | ConvertFrom-Json
+        foreach ($vm in $vms){
+            updateCSV @{
+            "SubscriptionName" = $sub
+            "ResourceGroupName" = $vm.ResourceGroup
+            "ServerName" = $vm.Name
+            "LicenseType" = $vm.LicenseType
+            "OSType" = $vm.StorageProfile.OsDisk.OsType
+            "Offer" = $vm.StorageProfile.imagereference.offer
+            }
+        }
+    }
+}
+# Query for SQLVMs
+foreach ($sub in $subs) {
+az account set --s $sub
+$sqlvms = @()
+$sqlvms = az sql vm list | ConvertFrom-JSON
+    foreach ($sqlvm in $sqlvms){
+        updateCSV @{
+        "SubscriptionName" = $sub
+        "ResourceGroupName" = $sqlvm.ResourceGroup
+        "ServerName" = $sqlvm.Name
+        "LicenseType" = $sqlvm.sqlServerLicenseType
+        "OSType" = $sqlvm.sqlImageOffer
+        "Offer" = $sqlvm.StorageProfile.imagereference.offer
+        }
+    }
+}
