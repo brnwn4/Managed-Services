@@ -14,10 +14,10 @@ function CreateReportItem($item) {
     Add-Content -Path $path -Value "$($item.ApplicationOwner),$($item.ApplicationCategory),$($item.CapitalProject),$($item.CapitalProjectName),$($item.BuildDate)"
     }
 
-# $subs = @("Eversource-IT-Dev-01",
-#     "Eversource-IT-Prd-01",
-#     "Eversource-IT-Hub",
-#     "Eversource-IT-Tst-01")
+$subs = @("Eversource-IT-Dev-01",
+    "Eversource-IT-Prd-01",
+    "Eversource-IT-Hub",
+    "Eversource-IT-Tst-01")
 
 $ApplicationOwner_Count = 0
 $ApplicationCategory_Count = 0
