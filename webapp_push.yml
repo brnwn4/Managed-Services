@@ -1,0 +1,70 @@
+# specific branch build
+#file = customer name in the past. but represents file names
+trigger: none
+pool: custome agent pool
+
+variables:
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+steps:
+- task: DotNetCoreInstaller@0
+  displayName: 'Use .NET Core sdk 3.1'
+  inputs:
+    version: 3.1.402
+  continueOnError: true
+
+- task: NuGetToolInstaller@0
+  displayName: 'Use NuGet 4.9.1'
+  inputs:
+    versionSpec: 4.9.1
+
+- task: DotNetCoreCLI@2
+  displayName: dotnet restore
+  inputs:
+    command: restore
+
+- task: DotNetCoreCLI@2
+  displayName: dotnet build
+  inputs:
+    command: build
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'test results'
+  inputs:
+    command: test
+    arguments: '-v n --configuration $(buildConfiguration) --no-build --no-restore --filter TestCategory!=IgnoreInAutomatedBuild /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura'
+
+
+- task: PublishCodeCoverageResults@1
+  displayName: 'Publish code coverage'
+  inputs:
+    codeCoverageTool: Cobertura
+    summaryFileLocation: '$(Build.SourcesDirectory)\file.Lia_va_bot.Tests\coverage.cobertura.xml'
+    reportDirectory: '$(Build.SourcesDirectory)\file.Lia_va_bot.Tests'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Artifacts'
+
+- task: DotNetCoreCLI@2
+  displayName: dotnet publish
+  inputs:
+    command: publish
+    publishWebProjects: false
+    projects: 'file.Lia-va-bot/file.Lia_va_bot'
+    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    zipAfterPublish: true
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish to Azure Pipelines'
+  inputs:
+    PathtoPublish: $(Build.ArtifactStagingDirectory)
+    ArtifactName: Artifacts
+
+- task: AzureWebApp@1
+  displayName: 'Bot App Service Deploy'
+  inputs:
+    azureSubscription: 'service principal name'
+    appType: webApp
+    appName: app_service_name
+    package: $(Build.ArtifactStagingDirectory)/**/*.zip
