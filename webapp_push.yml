@@ -1,5 +1,6 @@
 # specific branch build
 #file = customer name in the past. but represents file names
+# This was for a webapp .net core ! 
 trigger: none
 pool: custome agent pool
 
