@@ -1,0 +1,134 @@
+trigger: none
+pool: Lia-Dev
+    
+resources:
+  - repo: self
+
+variables:
+#  - name: isMain
+#    value: $[eq(variables['Build.SourceBranchName'], 'refs/heads/main')]
+  - name: serviceConnectionName-dev
+    value: <VALUE>
+  - name: serviceConnectionName-cert
+    value: <VALUE> # UPDATE WITH CERT SP ONCE ESTABLISHED
+  - name: serviceConnectionName-prod
+    value: <VALUE> # UPDATE WITH PROD SP ONCE ESTABLISHED
+# Need to fix Script failed with error: Error: Input required: connectedServiceNameARM
+stages:
+# - stage: Dev_Pre_Deployment_Config
+#   jobs:
+#     - job: Dev_Pre_Deployment_Config
+#       displayName: Dev_Pre_Deployment_Post_Config
+#       steps:
+#       - template: ./bot-service-preconfig.yml
+#         parameters:
+#           serviceConnectionName: $(serviceConnectionName-dev)
+
+- stage: Dev_IaC_Build
+  variables:
+  - template: ../variables/iac_bot_dev.yml # update naming accordingly
+  jobs:
+    - job: Build
+      displayName: Build
+      steps:
+        - template: './tf-private-build.yml' # update naming accordingly
+          parameters:
+            serviceConnectionName: $(serviceConnectionName-dev)
+- stage: Dev_IaC_Deploy
+  variables:
+  - template: ../variables/iac_bot_dev.yml # update naming accordingly
+  jobs:
+    - deployment: terraform
+      displayName: Terraform_Deploy
+      pool: # CUSTOM AGENT POOL OR ADO POOL
+      timeoutInMinutes: 0
+      environment: "dev"
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - template: './tf-private-deploy.yml' # update naming accordingly
+                parameters:
+                  serviceConnectionName: $(serviceConnectionName-dev)
+
+- stage: Dev_Post_Deployment_Config
+  jobs:
+    - job: Bot_Services_Post_Config
+      displayName: Bot_Services_Post_Config
+      steps:
+      - template: ./bot-postconfig.yml
+        parameters:
+          serviceConnectionName: $(serviceConnectionName-dev)
+
+- stage: Cert_IaC_Build
+  variables:
+  - template: ../variables/iac_bot_dev.yml # update naming accordingly
+  jobs:
+    - job: Build
+      displayName: Build
+      steps:
+        - template: './tf-private-build.yml' # update naming accordingly
+          parameters:
+            serviceConnectionName: $(serviceConnectionName-cert)
+
+- stage: Cert_IaC_Deploy
+  variables:
+  - template: ../variables/iac_bot_dev.yml # update naming accordingly
+  jobs:
+    - deployment: terraform
+      displayName: Terraform_Deploy
+      pool: Lia-Dev
+      timeoutInMinutes: 0
+      environment: "cert"
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - template: './tf-private-deploy.yml' # update naming accordingly
+                parameters:
+                  serviceConnectionName: $(serviceConnectionName-cert)
+
+- stage: Cert_Post_Deployment_Config
+  jobs:
+    - job: Bot_Services_Post_Config
+      displayName: Bot_Services_Post_Config
+      steps:
+      - template: ./bot-postconfig.yml
+        parameters:
+          serviceConnectionName: $(serviceConnectionName-dev)
+
+# - stage: Prod_IaC_Build
+#   variables:
+#   - template: ../variables/iac_bot_prod.yml # update naming accordingly
+#   jobs:
+#     - job: Build
+#       displayName: Build
+#       steps:
+#         - template: './tf-private-build.yml' # update naming accordingly
+#           parameters:
+#             serviceConnectionName: $(serviceConnectionName-prod)
+# - stage: Prod_IaC_Deploy
+#   variables:
+#   - template: ../variables/iac_bot_prod.yml # update naming accordingly
+#   jobs:
+#     - deployment: terraform
+#       displayName: Terraform_Deploy
+#       pool:
+#         vmImage: ubuntu-latest
+#       timeoutInMinutes: 0
+#       environment: "prod"
+#       strategy:
+#         runOnce:
+#           deploy:
+#             steps:
+#               - template: './tf-public-deploy.yml' # update naming accordingly
+#                 parameters:
+#                   serviceConnectionName: $(serviceConnectionName-prod)
+# - stage: Prod_Post_Deployment_Config
+#   jobs:
+#     - job: Bot_Services_Post_Config
+#       displayName: Bot_Services_Post_Config
+#       steps:
+#       - template: ./bot-postconfig.yml
+#         parameters:
+#           serviceConnectionName: $(serviceConnectionName-dev)
